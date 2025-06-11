@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Fichaje</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --border: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            padding: 25px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .time-picker {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+        
+        .time-group {
+            flex: 1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input[type="time"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="time"]:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .result {
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            font-size: 18px;
+            margin-top: 15px;
+            border: 1px dashed var(--primary);
+        }
+        
+        .total-hours {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-top: 8px;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        @media (max-width: 480px) {
+            .time-picker {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>📅 Sistema de Fichaje</h1>
+        
+        <div class="time-picker">
+            <div class="time-group">
+                <label for="horaEntrada">Hora de Entrada</label>
+                <input type="time" id="horaEntrada" required>
+            </div>
+            
+            <div class="time-group">
+                <label for="horaSalida">Hora de Salida</label>
+                <input type="time" id="horaSalida" required>
+            </div>
+        </div>
+        
+        <button id="calcularBtn" class="btn">Calcular Horas Trabajadas</button>
+        
+        <div class="result">
+            <p>Total horas trabajadas:</p>
+            <div id="totalHoras" class="total-hours">00:00</div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('calcularBtn').addEventListener('click', calcularHoras);
+        
+        function calcularHoras() {
+            const entrada = document.getElementById('horaEntrada').value;
+            const salida = document.getElementById('horaSalida').value;
+            
+            if(!entrada || !salida) {
+                alert('Por favor, completa ambos campos');
+                return;
+            }
+            
+            // Convertir horas a minutos totales
+            const [entHora, entMin] = entrada.split(':').map(Number);
+            const [salHora, salMin] = salida.split(':').map(Number);
+            
+            let totalMinutos = (salHora * 60 + salMin) - (entHora * 60 + entMin);
+            
+            // Manejar horas nocturnas (turno que pasa la medianoche)
+            if(totalMinutos < 0) {
+                totalMinutos += 24 * 60;
+            }
+            
+            const horas = Math.floor(totalMinutos / 60);
+            const minutos = totalMinutos % 60;
+            
+            // Formatear resultado
+            const horasStr = String(horas).padStart(2, '0');
+            const minutosStr = String(minutos).padStart(2, '0');
+            
+            document.getElementById('totalHoras').textContent = `${horasStr}:${minutosStr}`;
+        }
+    </script>
+</body>
+</html>
